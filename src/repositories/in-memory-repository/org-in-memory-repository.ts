@@ -20,8 +20,6 @@ export class InMemoryOrgRepository implements OrgRepository {
       neighborhood: data.neighborhood,
       street: data.street,
       number: data.number,
-      latitude: data.latitude,
-      longitude: data.latitude,
     }
 
     this.items.push(org)
