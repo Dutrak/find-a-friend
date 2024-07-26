@@ -21,9 +21,6 @@ model Org {
   street       String
   number       String
 
-  latitude  String
-  longitude String
-
   pets Pet[]
 
   @@map("organizations")
