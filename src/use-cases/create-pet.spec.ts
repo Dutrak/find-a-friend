@@ -7,7 +7,7 @@ import { hash } from 'bcryptjs'
 import { InMemoryOrgRepository } from '@/repositories/in-memory-repository/org-in-memory-repository'
 import { ResourceNotFoundError } from './errors/resource-not-found-error'
 
-describe('Create Org Use Case', () => {
+describe('Create Pet Use Case', () => {
   let orgRepository: OrgRepository
   let petRepository: PetRepository
   let sut: CreatePetUseCase
