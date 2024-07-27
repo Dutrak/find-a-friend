@@ -59,20 +59,28 @@ export class InMemoryPetRepository implements PetRepository {
     }
   }
 
-  async searchMany(city: string, query?: QueryParams) {
+  async searchMany(city: string, query: QueryParams) {
     const orgsByCity = await this.orgRepository.getByCity(city)
 
     const returnedValue: PetData[] = []
 
     const pets = this.pets
-      .filter((value) => orgsByCity?.some((org) => org.id === value.org_id))
-      .filter((value) => value.energy_level === query?.energyLevel ?? true)
-      .filter((value) => value.environment === query?.environment ?? true)
-      .filter((value) => value.age === query?.age ?? true)
       .filter(
-        (value) => value.energy_level === query?.independencyLevel ?? true,
+        (value) => orgsByCity?.some((org) => org.id === value.org_id) ?? true,
       )
-      .filter((value) => value.size === query?.size ?? true)
+      .filter((value) =>
+        query?.energyLevel ? query.energyLevel === value.energy_level : true,
+      )
+      .filter((value) =>
+        query?.environment ? query.environment === value.environment : true,
+      )
+      .filter((value) => (query?.age ? query.age === value.age : true))
+      .filter((value) =>
+        query?.independencyLevel
+          ? query?.independencyLevel === value.independency_level
+          : true,
+      )
+      .filter((value) => (query?.size ? query.size === value.size : true))
 
     for (const pet of pets) {
       const images = this.images.filter((value) => value.id === pet.id)
@@ -88,6 +96,10 @@ export class InMemoryPetRepository implements PetRepository {
 
   async getById(id: string) {
     const pet = this.pets.filter((value) => value.id === id)[0]
+
+    if (!pet) {
+      return null
+    }
 
     return {
       ...pet,
