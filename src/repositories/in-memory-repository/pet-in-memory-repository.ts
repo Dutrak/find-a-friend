@@ -1,10 +1,5 @@
 import { randomUUID } from 'crypto'
-import {
-  CreatePetData,
-  PetData,
-  PetRepository,
-  QueryParams,
-} from '../pet-repository'
+import { CreatePetData, PetRepository, QueryParams } from '../pet-repository'
 import { Image, Pet, Requirement } from '@prisma/client'
 import { OrgRepository } from '../org-repository'
 
@@ -62,7 +57,7 @@ export class InMemoryPetRepository implements PetRepository {
   async searchMany(city: string, query: QueryParams) {
     const orgsByCity = await this.orgRepository.getByCity(city)
 
-    const returnedValue: PetData[] = []
+    const returnedValue = []
 
     const pets = this.pets
       .filter(
