@@ -42,15 +42,18 @@ export class PrismaPetRepository implements PetRepository {
     const pets = await prisma.pet.findMany({
       where: {
         org: {
-          city,
+          city: { equals: city, mode: 'insensitive' },
         },
         AND: [
           {
-            age: query?.age,
-            energy_level: query?.energyLevel,
-            independency_level: query?.independencyLevel,
-            environment: query?.environment,
-            size: query?.size,
+            age: { contains: query?.age, mode: 'insensitive' },
+            energy_level: { contains: query?.energyLevel, mode: 'insensitive' },
+            independency_level: {
+              contains: query?.independencyLevel,
+              mode: 'insensitive',
+            },
+            environment: { contains: query?.environment, mode: 'insensitive' },
+            size: { contains: query?.size, mode: 'insensitive' },
           },
         ],
       },
