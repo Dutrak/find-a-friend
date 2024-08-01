@@ -3,7 +3,7 @@ import { makeCreatePetUseCase } from '@/use-cases/factories/make-create-pet-use-
 import { FastifyReply, FastifyRequest } from 'fastify'
 import { z } from 'zod'
 
-export async function createOrg(request: FastifyRequest, reply: FastifyReply) {
+export async function createPet(request: FastifyRequest, reply: FastifyReply) {
   const createOrgBodySchema = z.object({
     name: z.string().min(3),
     about: z.string(),
@@ -12,38 +12,16 @@ export async function createOrg(request: FastifyRequest, reply: FastifyReply) {
     size: z.coerce.string(),
     independencyLevel: z.enum(['low', 'medium', 'high']),
     environment: z.string(),
-    orgId: z.string().uuid(),
-    images: z.array(z.string().url()),
+    images: z.array(z.string()),
     requirements: z.array(z.string()),
   })
 
-  const {
-    name,
-    about,
-    age,
-    energyLevel,
-    size,
-    independencyLevel,
-    environment,
-    orgId,
-    images,
-    requirements,
-  } = createOrgBodySchema.parse(request.body)
+  const body = createOrgBodySchema.parse(request.body)
+  const orgId = request.user.sub
 
   try {
     const useCase = makeCreatePetUseCase()
-    const { pet } = await useCase.execute({
-      name,
-      about,
-      age,
-      energyLevel,
-      size,
-      independencyLevel,
-      environment,
-      orgId,
-      images,
-      requirements,
-    })
+    const { pet } = await useCase.execute({ ...body, orgId })
 
     return reply.status(201).send({ pet })
   } catch (error) {

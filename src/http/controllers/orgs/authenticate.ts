@@ -12,14 +12,11 @@ export async function authenticateOrg(
     password: z.string().min(4),
   })
 
-  const { email, password } = authenticateBodySchema.parse(request.body)
+  const body = authenticateBodySchema.parse(request.body)
 
   try {
     const useCase = makeAuthenticateOrgUseCase()
-    const { org } = await useCase.execute({
-      email,
-      password,
-    })
+    const { org } = await useCase.execute({ ...body })
 
     const token = await reply.jwtSign(
       {},

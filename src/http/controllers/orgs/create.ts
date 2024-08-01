@@ -17,33 +17,11 @@ export async function createOrg(request: FastifyRequest, reply: FastifyReply) {
     number: z.string(),
   })
 
-  const {
-    name,
-    email,
-    phone,
-    password,
-    cep,
-    state,
-    city,
-    neighborhood,
-    street,
-    number,
-  } = createOrgBodySchema.parse(request.body)
+  const body = createOrgBodySchema.parse(request.body)
 
   try {
     const useCase = makeCreateOrgUseCase()
-    const { org } = await useCase.execute({
-      name,
-      email,
-      phone,
-      password,
-      cep,
-      state,
-      city,
-      neighborhood,
-      street,
-      number,
-    })
+    const { org } = await useCase.execute({ ...body })
 
     return reply.status(201).send({ org })
   } catch (error) {
