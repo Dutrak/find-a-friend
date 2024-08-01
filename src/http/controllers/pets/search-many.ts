@@ -7,8 +7,8 @@ export async function SearchManyPets(
   request: FastifyRequest,
   reply: FastifyReply,
 ) {
-  const SearchManyPetsParamsSchema = z.object({ city: z.string() })
   const SearchManyPetsQueryParamsSchema = z.object({
+    city: z.string(),
     age: z.coerce.string().optional(),
     energyLevel: z
       .enum(['very low', 'low', 'normal', 'high', 'very high'])
@@ -18,9 +18,9 @@ export async function SearchManyPets(
     environment: z.string().optional(),
   })
 
-  const { city } = SearchManyPetsParamsSchema.parse(request.params)
-
-  const query = SearchManyPetsQueryParamsSchema.parse(request.query)
+  const { city, ...query } = SearchManyPetsQueryParamsSchema.parse(
+    request.query,
+  )
 
   try {
     const useCase = makeSearchManyPetsUseCase()
