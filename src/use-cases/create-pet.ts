@@ -1,6 +1,8 @@
 import { OrgRepository } from '@/repositories/org-repository'
 import { PetData, PetRepository } from '@/repositories/pet-repository'
 import { ResourceNotFoundError } from './errors/resource-not-found-error'
+import { PetInsuficientImageError } from './errors/pet-insuficient-images-error'
+import { PetInsuficientRequirementError } from './errors/pet-insuficient-requirement-error'
 
 interface CreatePetRequest {
   name: string
@@ -41,6 +43,14 @@ export class CreatePetUseCase {
 
     if (!org) {
       throw new ResourceNotFoundError()
+    }
+
+    if (!images || images.length === 0 || images[0] === '') {
+      throw new PetInsuficientImageError()
+    }
+
+    if (!requirements || requirements.length === 0 || requirements[0] === '') {
+      throw new PetInsuficientRequirementError()
     }
 
     const pet = await this.petRepository.create({

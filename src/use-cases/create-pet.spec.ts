@@ -6,6 +6,8 @@ import { OrgRepository } from '@/repositories/org-repository'
 import { hash } from 'bcryptjs'
 import { InMemoryOrgRepository } from '@/repositories/in-memory-repository/org-in-memory-repository'
 import { ResourceNotFoundError } from './errors/resource-not-found-error'
+import { PetInsuficientImageError } from './errors/pet-insuficient-images-error'
+import { PetInsuficientRequirementError } from './errors/pet-insuficient-requirement-error'
 
 describe('Create Pet Use Case', () => {
   let orgRepository: OrgRepository
@@ -42,11 +44,45 @@ describe('Create Pet Use Case', () => {
       independencyLevel: 'high',
       environment: 'Home',
       orgId: 'org-01',
-      images: ['src/catitotest'],
+      images: ['catitotest.jpg'],
       requirements: ['A large Home'],
     })
 
     expect(pet.id).toEqual(expect.any(String))
+  })
+
+  it('Should not be able to create a pet with no images', async () => {
+    expect(
+      sut.execute({
+        name: 'Cattito',
+        about: 'My little best cat friend',
+        age: '10',
+        energyLevel: 'low',
+        size: 'medium',
+        independencyLevel: 'high',
+        environment: 'Home',
+        orgId: 'org-01',
+        images: [],
+        requirements: ['A large Home'],
+      }),
+    ).rejects.toBeInstanceOf(PetInsuficientImageError)
+  })
+
+  it('Should not be able to create a pet with no requirements', async () => {
+    expect(
+      sut.execute({
+        name: 'Cattito',
+        about: 'My little best cat friend',
+        age: '10',
+        energyLevel: 'low',
+        size: 'medium',
+        independencyLevel: 'high',
+        environment: 'Home',
+        orgId: 'org-01',
+        images: ['catito.jpg'],
+        requirements: [],
+      }),
+    ).rejects.toBeInstanceOf(PetInsuficientRequirementError)
   })
 
   it('Should not be able to create a pet with non existent org', async () => {
@@ -60,7 +96,7 @@ describe('Create Pet Use Case', () => {
         independencyLevel: 'high',
         environment: 'Home',
         orgId: 'non-existent-org',
-        images: ['src/catitotest'],
+        images: ['catitotest.jpg'],
         requirements: ['A large Home'],
       }),
     ).rejects.toBeInstanceOf(ResourceNotFoundError)
