@@ -12,8 +12,7 @@ export async function createPet(request: FastifyRequest, reply: FastifyReply) {
     size: z.coerce.string(),
     independencyLevel: z.enum(['low', 'medium', 'high']),
     environment: z.string(),
-    images: z.array(z.string()),
-    requirements: z.array(z.string()),
+    requirements: z.string(),
   })
 
   const body = createOrgBodySchema.parse(request.body)
@@ -21,7 +20,16 @@ export async function createPet(request: FastifyRequest, reply: FastifyReply) {
 
   try {
     const useCase = makeCreatePetUseCase()
-    const { pet } = await useCase.execute({ ...body, orgId })
+
+    const images = request.files.map((file) => file.filename) as string[] | null
+    const requirements: string[] | null = JSON.parse(body.requirements)
+
+    const { pet } = await useCase.execute({
+      ...body,
+      images,
+      requirements,
+      orgId,
+    })
 
     return reply.status(201).send({ pet })
   } catch (error) {
